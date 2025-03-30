@@ -24,9 +24,6 @@ GunSlime es un juego de acción en el que controlas a un slime armado en un comb
 3. Realiza los cambios y haz un commit: `git commit -m "Añadida nueva funcionalidad"`.
 4. Envía tu pull request.
 
-## 📜 Licencia
-Este proyecto está bajo la licencia MIT. ¡Siéntete libre de modificar y compartir!
-
 ---
 **¡Gracias por jugar GunSlime! 💥🐌**
 
