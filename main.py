@@ -10,7 +10,7 @@ pygame.init()
 ANCHO = 800
 ALTO = 600
 VENTANA = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("GUNGAME")
+pygame.display.set_caption("GUNSLIME")
 
 # Colores
 BLANCO = (255, 255, 255)
@@ -203,8 +203,8 @@ def pantalla_inicio():
             pygame.draw.circle(VENTANA, BLANCO, (x, y), 1)
         
         # Título del juego
-        titulo = fuente_titulo.render("GUNGAME", True, NARANJA)
-        sombra = fuente_titulo.render("GUNGAME", True, GRIS)
+        titulo = fuente_titulo.render("GUNSLIME", True, NARANJA)
+        sombra = fuente_titulo.render("GUNSLIME", True, GRIS)
         VENTANA.blit(sombra, (ANCHO//2 - titulo.get_width()//2 + 5, 150 + 5))
         VENTANA.blit(titulo, (ANCHO//2 - titulo.get_width()//2, 150))
         
