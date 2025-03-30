@@ -5,6 +5,17 @@ import math
 
 # Inicializar Pygame
 pygame.init()
+# Inicializar el mezclador de sonido
+pygame.mixer.init()
+
+# Cargar la música (reemplaza 'musica.mp3' con tu archivo)
+pygame.mixer.music.load("soundtrack.mp3")
+
+# Ajustar volumen (opcional)
+pygame.mixer.music.set_volume(0.5)  # Valor entre 0.0 y 1.0
+
+# Reproducir la música en bucle (-1 es para que se repita infinitamente)
+pygame.mixer.music.play(-1)
 
 # Definir las dimensiones de la ventana
 ANCHO = 800
