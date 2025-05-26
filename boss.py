@@ -8,16 +8,16 @@ class BossEpisodico:
         self.x = x
         self.y = y
         self.size = 120  # Más grande que un jefe normal
-        self.vida_max = 200 + (nivel * 30)
+        self.vida_max = BOSS_VIDA_BASE + (nivel * 50)  # Aumentado el escalado por nivel
         self.vida = self.vida_max
-        self.vel = 2
+        self.vel = BOSS_VELOCIDAD_BASE + (nivel * 0.2)  # Aumentado el escalado por nivel
         self.fase = 1
         self.ultimo_cambio_fase = pygame.time.get_ticks()
-        self.tiempo_fase = 15000  # 15 segundos por fase
+        self.tiempo_fase = 12000  # Reducido de 15000 a 12000 para más dinamismo
         self.patron_disparo = 0
         self.ultimo_patron = pygame.time.get_ticks()
         self.ultimo_disparo = 0
-        self.velocidad_disparo = 1000
+        self.velocidad_disparo = 800  # Reducido de 1000 a 800 para más ataques
         self.angulo = 0
         self.radio_orbita = 200
         self.centro_x = ANCHO // 2
@@ -54,8 +54,8 @@ class BossEpisodico:
         if tiempo_actual - self.ultimo_disparo >= self.velocidad_disparo:
             self.ultimo_disparo = tiempo_actual
             
-            # Cambiar patrón de disparo cada 5 segundos
-            if tiempo_actual - self.ultimo_patron >= 5000:
+            # Cambiar patrón de disparo cada 4 segundos (reducido de 5)
+            if tiempo_actual - self.ultimo_patron >= 4000:
                 self.patron_disparo = (self.patron_disparo + 1) % 3
                 self.ultimo_patron = tiempo_actual
 
@@ -72,7 +72,7 @@ class BossEpisodico:
                         'y': self.y + self.size // 2,
                         'dx': dx * BALA_VEL,
                         'dy': dy * BALA_VEL,
-                        'danio': 2,
+                        'danio': BOSS_DANIO_BASE,
                         'tiempo_creacion': tiempo_actual
                     })
             elif self.patron_disparo == 1:  # Disparo en cruz
@@ -82,7 +82,7 @@ class BossEpisodico:
                         'y': self.y + self.size // 2,
                         'dx': dx * BALA_VEL,
                         'dy': dy * BALA_VEL,
-                        'danio': 1,
+                        'danio': BOSS_DANIO_BASE * 0.8,  # 80% del daño base
                         'tiempo_creacion': tiempo_actual
                     })
             else:  # Disparo circular
@@ -95,7 +95,7 @@ class BossEpisodico:
                         'y': self.y + self.size // 2,
                         'dx': dx * BALA_VEL * 0.7,
                         'dy': dy * BALA_VEL * 0.7,
-                        'danio': 1,
+                        'danio': BOSS_DANIO_BASE * 0.6,  # 60% del daño base
                         'rebota': True,
                         'rebotes': 0,
                         'tiempo_creacion': tiempo_actual

@@ -125,6 +125,9 @@ class EfectoVisual:
 
 class Game:
     def __init__(self):
+        # Mostrar pantalla de carga
+        self.mostrar_pantalla_carga()
+        
         self.jugador = Player()
         self.enemigos = []
         self.balas_jugador = []
@@ -156,6 +159,76 @@ class Game:
         self.efectos_visuales = []
         self.ultimo_efecto_jefe = 0
         self.intervalo_efectos_jefe = 500  # 500ms entre efectos
+
+    def mostrar_pantalla_carga(self):
+        """Muestra una pantalla de carga mientras se inicializan los assets"""
+        # Crear una superficie para la pantalla de carga
+        pantalla_carga = pygame.Surface((ANCHO, ALTO))
+        pantalla_carga.fill(AZUL_OSCURO)
+        
+        # Dibujar fondo estrellado
+        for _ in range(100):
+            x = random.randint(0, ANCHO)
+            y = random.randint(0, ALTO)
+            pygame.draw.circle(pantalla_carga, BLANCO, (x, y), 1)
+        
+        # Título
+        titulo = FUENTE_TITULO.render("GUNSLIME", True, NARANJA)
+        sombra = FUENTE_TITULO.render("GUNSLIME", True, GRIS)
+        pantalla_carga.blit(sombra, (ANCHO//2 - titulo.get_width()//2 + 5, ALTO//3 + 5))
+        pantalla_carga.blit(titulo, (ANCHO//2 - titulo.get_width()//2, ALTO//3))
+        
+        # Barra de progreso
+        barra_ancho = 400
+        barra_alto = 20
+        barra_x = ANCHO//2 - barra_ancho//2
+        barra_y = ALTO//2
+        
+        # Dibujar barra base
+        pygame.draw.rect(pantalla_carga, GRIS, 
+                        (barra_x, barra_y, barra_ancho, barra_alto), 
+                        border_radius=10)
+        
+        # Mostrar la pantalla inicial
+        VENTANA.blit(pantalla_carga, (0, 0))
+        pygame.display.flip()
+        
+        # Simular carga de assets
+        for i in range(101):
+            # Limpiar el área del texto de carga
+            pygame.draw.rect(pantalla_carga, AZUL_OSCURO, 
+                           (0, barra_y + 40, ANCHO, 50))
+            
+            # Actualizar barra de progreso
+            progreso = i / 100
+            pygame.draw.rect(pantalla_carga, NARANJA, 
+                           (barra_x, barra_y, int(barra_ancho * progreso), barra_alto), 
+                           border_radius=10)
+            
+            # Texto de carga
+            texto_carga = FUENTE_MEDIANA.render(f"Cargando... {i}%", True, BLANCO)
+            pantalla_carga.blit(texto_carga, 
+                              (ANCHO//2 - texto_carga.get_width()//2, barra_y + 40))
+            
+            # Actualizar pantalla
+            VENTANA.blit(pantalla_carga, (0, 0))
+            pygame.display.flip()
+            
+            # Pequeña pausa para simular carga
+            pygame.time.wait(15)  # Reducido de 20 a 15 para que sea más fluido
+            
+            # Mantener la ventana responsiva
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        
+        # Transición suave al menú
+        for alpha in range(255, 0, -5):
+            pantalla_carga.set_alpha(alpha)
+            VENTANA.blit(pantalla_carga, (0, 0))
+            pygame.display.flip()
+            pygame.time.wait(10)
 
     def precargar_fondos(self):
         """Precarga todos los fondos del juego"""
@@ -192,7 +265,7 @@ class Game:
             json.dump({'puntuacion': self.mejor_puntuacion}, f)
 
     def spawnear_enemigo(self):
-        if self.jefe_actual is None and self.enemigos_derrotados > 0 and self.enemigos_derrotados % BOSS_APARICION_ENEMIGOS == 0:
+        if self.jefe_actual is None and self.enemigos_derrotados >= BOSS_APARICION_ENEMIGOS and self.enemigos_derrotados % BOSS_APARICION_ENEMIGOS == 0:
             # Spawnear jefe
             x = ANCHO // 2 - JEFE_SIZE // 2
             y = ALTO // 2 - JEFE_SIZE // 2
@@ -201,10 +274,9 @@ class Game:
             self.efectos_visuales.append(EfectoVisual(x + JEFE_SIZE//2, y + JEFE_SIZE//2, "explosion", 1000))
             # Cambiar al fondo del jefe
             self.cambiar_fondo('jefe')
-            # Cambiar música a la del jefe
+            # Cambiar música a la del jefe con transición suave
             if MUSICA_BOSS:
                 try:
-                    pygame.mixer.music.fadeout(1000)  # Fade out de 1 segundo
                     pygame.mixer.music.load(MUSICA_BOSS)
                     pygame.mixer.music.play(-1)  # -1 para loop infinito
                 except Exception as e:
@@ -438,10 +510,9 @@ class Game:
                     self.jefe_actual = None
                     # Cambiar al fondo normal
                     self.cambiar_fondo('normal')
-                    # Cambiar música a la normal
+                    # Cambiar música a la normal con transición suave
                     if MUSICA_NORMAL:
                         try:
-                            pygame.mixer.music.fadeout(1000)  # Fade out de 1 segundo
                             pygame.mixer.music.load(MUSICA_NORMAL)
                             pygame.mixer.music.play(-1)  # -1 para loop infinito
                         except Exception as e:
@@ -466,13 +537,15 @@ class Game:
                 self.efectos.remove(efecto)
 
     def dibujar(self):
+        # Limpiar la pantalla completamente
+        VENTANA.fill(AZUL_OSCURO)
+        
         # Dibujar fondo actual
         if self.fondo_actual:
             frame = self.fondo_actual.get_current_frame()
             if frame:
                 VENTANA.blit(frame, (0, 0))
         else:
-            VENTANA.fill(AZUL_OSCURO)
             # Dibujar fondo estrellado como respaldo
             for _ in range(30):
                 x = random.randint(0, ANCHO)
@@ -520,15 +593,11 @@ class Game:
                         (mouse_x, mouse_y + 10), 2)
         
         # Dibujar menú de mejoras si está activo
-        if self.juego_pausado:
-            print(f"Estado del menú - Activo: {self.menu_mejoras.activo}, Juego pausado: {self.juego_pausado}")  # Debug
-            if self.menu_mejoras.activo:
-                print("Intentando mostrar menú de mejoras")  # Debug
-                self.menu_mejoras.mostrar(VENTANA)
-            else:
-                print("Menú de mejoras no está activo")  # Debug
+        if self.juego_pausado and self.menu_mejoras.activo:
+            self.menu_mejoras.mostrar(VENTANA)
         
-        pygame.display.update()
+        # Actualizar la pantalla
+        pygame.display.flip()
 
     def dibujar_hud(self):
         # Barra de experiencia
@@ -578,27 +647,42 @@ class Game:
         while self.estado == "MENU":
             VENTANA.fill(AZUL_OSCURO)
             
-            # Fondo estrellado
-            for _ in range(100):
-                x = random.randint(0, ANCHO)
-                y = random.randint(0, ALTO)
-                pygame.draw.circle(VENTANA, BLANCO, (x, y), 1)
+            # Fondo estrellado animado
+            tiempo_actual = pygame.time.get_ticks()
+            for i in range(100):
+                x = (tiempo_actual * 0.1 + i * 50) % ANCHO
+                y = (tiempo_actual * 0.05 + i * 30) % ALTO
+                brillo = int(128 + 127 * math.sin(tiempo_actual * 0.001 + i * 0.1))
+                color = (brillo, brillo, brillo)
+                pygame.draw.circle(VENTANA, color, (int(x), int(y)), 1)
             
-            # Título
-            titulo = FUENTE_TITULO.render("GUNSLIME", True, NARANJA)
+            # Título con efecto de brillo
+            brillo_titulo = int(128 + 127 * math.sin(tiempo_actual * 0.002))
+            color_titulo = (255, brillo_titulo, 0)
+            titulo = FUENTE_TITULO.render("GUNSLIME", True, color_titulo)
             sombra = FUENTE_TITULO.render("GUNSLIME", True, GRIS)
-            VENTANA.blit(sombra, (ANCHO//2 - titulo.get_width()//2 + 5, 150 + 5))
-            VENTANA.blit(titulo, (ANCHO//2 - titulo.get_width()//2, 150))
             
-            # Mejor puntuación
+            # Efecto de escala para el título
+            escala = 1.0 + 0.05 * math.sin(tiempo_actual * 0.003)
+            titulo_escalado = pygame.transform.scale(titulo, 
+                (int(titulo.get_width() * escala), int(titulo.get_height() * escala)))
+            
+            VENTANA.blit(sombra, (ANCHO//2 - titulo.get_width()//2 + 5, 150 + 5))
+            VENTANA.blit(titulo_escalado, 
+                        (ANCHO//2 - titulo_escalado.get_width()//2, 150))
+            
+            # Mejor puntuación con efecto de brillo
+            brillo_punt = int(128 + 127 * math.sin(tiempo_actual * 0.001))
+            color_punt = (brillo_punt, brillo_punt, brillo_punt)
             mejor_punt = FUENTE_MEDIANA.render(
-                f"Mejor puntuación: {self.mejor_puntuacion}", True, BLANCO)
+                f"Mejor puntuación: {self.mejor_puntuacion}", True, color_punt)
             VENTANA.blit(mejor_punt, 
                         (ANCHO//2 - mejor_punt.get_width()//2, 250))
             
-            # Instrucciones
+            # Instrucciones con efecto de parpadeo
+            alpha = int(128 + 127 * math.sin(tiempo_actual * 0.005))
             texto_jugar = FUENTE_MEDIANA.render(
-                "Presiona ENTER para jugar", True, BLANCO)
+                "Presiona ENTER para jugar", True, (255, 255, 255, alpha))
             texto_controles = FUENTE_PEQUEÑA.render(
                 "Controles: WASD para mover, Click para disparar", True, GRIS)
             
@@ -606,6 +690,10 @@ class Game:
                         (ANCHO//2 - texto_jugar.get_width()//2, 350))
             VENTANA.blit(texto_controles, 
                         (ANCHO//2 - texto_controles.get_width()//2, 400))
+            
+            # Versión del juego
+            version = FUENTE_PEQUEÑA.render("v1.0", True, GRIS)
+            VENTANA.blit(version, (ANCHO - version.get_width() - 10, ALTO - 30))
             
             pygame.display.update()
             
@@ -685,7 +773,10 @@ class Game:
         self.score = 0
         self.juego_pausado = False
         
-        # Iniciar música normal si está disponible
+        # Asegurar que el fondo y la música estén en su estado normal
+        self.cambiar_fondo('normal')
+        
+        # Iniciar música normal
         if MUSICA_NORMAL:
             try:
                 pygame.mixer.music.stop()  # Detener cualquier música que esté sonando
@@ -701,6 +792,17 @@ class Game:
         if self.jugador.puntuacion > self.mejor_puntuacion:
             self.mejor_puntuacion = self.jugador.puntuacion
             self.guardar_mejor_puntuacion()
+        
+        # Restablecer fondo y música a normal
+        self.cambiar_fondo('normal')
+        if MUSICA_NORMAL:
+            try:
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load(MUSICA_NORMAL)
+                pygame.mixer.music.play(-1)
+            except Exception as e:
+                print(f"⚠️ Error al restablecer la música normal: {e}")
+        
         if SONIDO_GAME_OVER:
             SONIDO_GAME_OVER.play()
         self.estado = "GAME_OVER"

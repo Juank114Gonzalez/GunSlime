@@ -8,21 +8,23 @@ class Enemy:
         self.x = x
         self.y = y
         self.size = ENEMIGO_SIZE
-        self.vida_max = ENEMIGO_VIDA_BASE + nivel // 2
+        self.vida_max = ENEMIGO_VIDA_BASE + nivel  # Aumentado el escalado por nivel
         self.vida = self.vida_max
-        self.vel = ENEMIGO_VEL_BASE + (nivel * 0.1)
+        self.vel = ENEMIGO_VEL_BASE + (nivel * 0.15)  # Aumentado el escalado por nivel
         self.tipo = random.choice(['NORMAL', 'RAPIDO', 'TANQUE'])
         self.ajustar_por_tipo()
         self.ultimo_disparo = 0
-        self.velocidad_disparo = 2000  # 2 segundos entre disparos
+        self.velocidad_disparo = 1500  # Reducido de 2000 a 1500 para más ataques
 
     def ajustar_por_tipo(self):
         if self.tipo == 'RAPIDO':
-            self.vel *= 1.5
-            self.vida_max = int(self.vida_max * 0.7)
+            self.vel *= 1.8  # Aumentado de 1.5 a 1.8
+            self.vida_max = int(self.vida_max * 0.6)  # Reducido de 0.7 a 0.6
+            self.velocidad_disparo = 1000  # Más rápido en disparos
         elif self.tipo == 'TANQUE':
-            self.vel *= 0.7
-            self.vida_max = int(self.vida_max * 1.5)
+            self.vel *= 0.6  # Reducido de 0.7 a 0.6
+            self.vida_max = int(self.vida_max * 2.0)  # Aumentado de 1.5 a 2.0
+            self.velocidad_disparo = 2500  # Más lento en disparos
         self.vida = self.vida_max
 
     def mover(self, jugador_x, jugador_y):
