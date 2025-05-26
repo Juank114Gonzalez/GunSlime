@@ -1,4 +1,5 @@
 import pygame
+import os
 
 # Inicialización de Pygame
 pygame.init()
@@ -87,18 +88,59 @@ FUENTE_TITULO = pygame.font.SysFont("Impact", 72)
 # Configuración de sonido
 try:
     pygame.mixer.init()
-    SONIDO_DISPARO = pygame.mixer.Sound("sounds/shoot.wav")
-    SONIDO_EXPLOSION = pygame.mixer.Sound("sounds/explosion.wav")
-    SONIDO_POWERUP = pygame.mixer.Sound("sounds/powerup.wav")
-    SONIDO_NIVEL = pygame.mixer.Sound("sounds/level_up.wav")
-    SONIDO_GAME_OVER = pygame.mixer.Sound("sounds/game_over.wav")
-except:
-    print("⚠️ Advertencia: No se pudieron cargar los sonidos. Continuando sin sonido.")
+    import os
+    
+    # Obtener la ruta base del proyecto
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
+    # Configuración de música
+    MUSICA_NORMAL = os.path.join(BASE_DIR, "soundtrack.mp3")
+    MUSICA_BOSS = os.path.join(BASE_DIR, "boss.mp3")
+    
+    # Verificar que los archivos de música existan
+    if not os.path.exists(MUSICA_NORMAL):
+        print(f"⚠️ Advertencia: No se encontró el archivo {MUSICA_NORMAL}")
+        MUSICA_NORMAL = None
+    if not os.path.exists(MUSICA_BOSS):
+        print(f"⚠️ Advertencia: No se encontró el archivo {MUSICA_BOSS}")
+        MUSICA_BOSS = None
+    
+    # Intentar cargar la música normal si existe
+    if MUSICA_NORMAL:
+        try:
+            pygame.mixer.music.load(MUSICA_NORMAL)
+            pygame.mixer.music.set_volume(0.5)  # Volumen al 50%
+            print(f"✅ Música normal cargada correctamente: {MUSICA_NORMAL}")
+        except Exception as e:
+            print(f"⚠️ Error al cargar la música normal: {e}")
+            MUSICA_NORMAL = None
+    
+    # Configuración de efectos de sonido
     SONIDO_DISPARO = None
     SONIDO_EXPLOSION = None
     SONIDO_POWERUP = None
     SONIDO_NIVEL = None
     SONIDO_GAME_OVER = None
+    
+    # Intentar cargar los efectos de sonido que existen
+    try:
+        SONIDO_DISPARO = pygame.mixer.Sound(os.path.join(BASE_DIR, "energy_shot.mp3"))
+        SONIDO_EXPLOSION = pygame.mixer.Sound(os.path.join(BASE_DIR, "enemy_destroy.mp3"))
+        SONIDO_DISPARO.set_volume(0.02)  # Volumen al 10%
+        SONIDO_EXPLOSION.set_volume(0.1)  # Volumen al 10%
+        print("✅ Efectos de sonido cargados correctamente")
+    except Exception as e:
+        print(f"⚠️ Error al cargar los efectos de sonido: {e}")
+        
+except Exception as e:
+    print(f"⚠️ Error al inicializar el audio: {e}")
+    SONIDO_DISPARO = None
+    SONIDO_EXPLOSION = None
+    SONIDO_POWERUP = None
+    SONIDO_NIVEL = None
+    SONIDO_GAME_OVER = None
+    MUSICA_NORMAL = None
+    MUSICA_BOSS = None
 
 # Constantes de jefes
 BOSS_APARICION_ENEMIGOS = 15  # Cada 30 enemigos aparece un jefe

@@ -201,6 +201,14 @@ class Game:
             self.efectos_visuales.append(EfectoVisual(x + JEFE_SIZE//2, y + JEFE_SIZE//2, "explosion", 1000))
             # Cambiar al fondo del jefe
             self.cambiar_fondo('jefe')
+            # Cambiar música a la del jefe
+            if MUSICA_BOSS:
+                try:
+                    pygame.mixer.music.fadeout(1000)  # Fade out de 1 segundo
+                    pygame.mixer.music.load(MUSICA_BOSS)
+                    pygame.mixer.music.play(-1)  # -1 para loop infinito
+                except Exception as e:
+                    print(f"⚠️ Error al cambiar a la música del jefe: {e}")
             print(f"¡Jefe aparecido! Enemigos derrotados: {self.enemigos_derrotados}")  # Debug
         elif self.jefe_actual is None and len(self.enemigos) < MAX_ENEMIGOS_BASE + self.nivel // 2:
             # Solo spawnea enemigos comunes si no hay jefe
@@ -430,6 +438,14 @@ class Game:
                     self.jefe_actual = None
                     # Cambiar al fondo normal
                     self.cambiar_fondo('normal')
+                    # Cambiar música a la normal
+                    if MUSICA_NORMAL:
+                        try:
+                            pygame.mixer.music.fadeout(1000)  # Fade out de 1 segundo
+                            pygame.mixer.music.load(MUSICA_NORMAL)
+                            pygame.mixer.music.play(-1)  # -1 para loop infinito
+                        except Exception as e:
+                            print(f"⚠️ Error al cambiar a la música normal: {e}")
                     self.spawnear_powerup()
                 if bala in self.jugador.bullets:
                     self.jugador.bullets.remove(bala)
@@ -668,6 +684,18 @@ class Game:
         self.balas_jefe = []
         self.score = 0
         self.juego_pausado = False
+        
+        # Iniciar música normal si está disponible
+        if MUSICA_NORMAL:
+            try:
+                pygame.mixer.music.stop()  # Detener cualquier música que esté sonando
+                pygame.mixer.music.load(MUSICA_NORMAL)
+                pygame.mixer.music.play(-1)  # -1 para loop infinito
+                print("✅ Música normal iniciada")
+            except Exception as e:
+                print(f"⚠️ Error al reproducir la música: {e}")
+        else:
+            print("⚠️ No hay música disponible para reproducir")
 
     def game_over(self):
         if self.jugador.puntuacion > self.mejor_puntuacion:
