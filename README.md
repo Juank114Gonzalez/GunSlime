@@ -1,28 +1,72 @@
-# GunSlime  
+# GUNSLIME
 
-*Un frenético juego donde los slimes se arman hasta los dientes.*
+Un juego de acción arcade donde controlas a un slime armado que debe sobrevivir a oleadas de enemigos y derrotar jefes.
 
-## 🎮 Sobre el juego
-GunSlime es un juego de acción en el que controlas a un slime armado en un combate lleno de disparos y caos. Derrota enemigos, mejora progresivamente y demuestra tu habilidad para sobrevivir en este mundo lleno de desafíos.
+## Características
 
-## 🚀 Cómo jugar
-1. Descarga el juego desde la carpeta `dist`.
-2. Ejecuta `main.exe` para comenzar a jugar.
-3. ¡Disfruta del caos y diviértete!
+- Sistema de niveles progresivos
+- Jefes cada 5 niveles con patrones de ataque únicos
+- Sistema de puntuación y mejor puntuación
+- Powerups que mejoran temporalmente tus habilidades
+- Diferentes tipos de enemigos con comportamientos únicos
+- Efectos visuales y sonoros
+- Controles intuitivos
 
-## 📁 Estructura del proyecto
-- `main.py` → Código principal del juego.
-- `dist/main.exe` → Archivo ejecutable para jugar directamente.
-- `ico.ico` → Ícono del juego.
-- `main.spec` → Archivo de configuración para la compilación.
-- `build/` → Archivos generados en el proceso de construcción.
+## Controles
 
-## 🤝 Contribuir
-¡Tu ayuda es bienvenida! Si quieres mejorar **GunSlime**, sigue estos pasos:
-1. Haz un fork del repositorio.
-2. Crea una rama con tu mejora: `git checkout -b feature-nueva-funcionalidad`.
-3. Realiza los cambios y haz un commit: `git commit -m "Añadida nueva funcionalidad"`.
-4. Envía tu pull request.
+- WASD: Movimiento
+- Click izquierdo: Disparar
+- ESC: Pausa/Game Over
+- ENTER: Iniciar juego
+- R: Reiniciar después de Game Over
+- M: Volver al menú principal
+
+## Powerups
+
+- Velocidad (Azul): Aumenta tu velocidad de movimiento
+- Daño (Rojo): Duplica el daño de tus disparos
+- Vida (Verde): Restaura vida
+- Balas (Amarillo): Aumenta el número máximo de balas
+
+## Tipos de Enemigos
+
+- Normal (Rojo): Enemigo básico
+- Rápido (Amarillo): Más rápido pero con menos vida
+- Tanque (Morado): Más lento pero con más vida
+
+## Jefes
+
+Cada 5 niveles aparecerá un jefe con:
+- Múltiples fases de combate
+- Diferentes patrones de ataque
+- Mayor vida y daño
+- Recompensas especiales al derrotarlo
+
+## Requisitos
+
+- Python 3.6+
+- Pygame
+- Fuente PressStart2P (opcional)
+
+## Instalación
+
+1. Clona este repositorio
+2. Instala las dependencias:
+```bash
+pip install -r requirements.txt
+```
+
+## Ejecución
+
+```bash
+python game.py
+```
+
+## Créditos
+
+- Desarrollado por [Tu Nombre]
+- Música y efectos de sonido: [Fuente]
+- Fuente PressStart2P: [Fuente]
 
 ---
 **¡Gracias por jugar GunSlime! 💥🐌**
